@@ -2,7 +2,7 @@ CC = gcc
 
 CFLAGS = -g -Wall
 
-TARGET = crossref.c
+TARGET = cr.c
 
 all: $(TARGET)
 	$(CC) $(CFLAGS) -o cr $(TARGET)
