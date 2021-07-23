@@ -16,7 +16,7 @@ const int MIN_LINE_LEN = 64;
 const size_t CHARSIZE = sizeof(char);
 const size_t WORDSIZE = sizeof(word);
 
-word* parsef(FILE* fp);
+word* fparse(FILE* fp);
 
 void addword(word* w_arr, size_t w_arr_size, char* w);
 
@@ -39,7 +39,7 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-word* parsef(FILE* fp) {
+word* fparse(FILE* fp) {
 	char* line_buf = (char*)malloc(MIN_LINE_LEN * CHARSIZE);
 	word* w_arr = NULL;
 	unsigned int line = 1;
