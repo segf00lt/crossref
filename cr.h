@@ -17,12 +17,12 @@ const size_t UINTSIZE = sizeof(unsigned int);
 const size_t LINESIZE = sizeof(line_t);
 const size_t WORDSIZE = sizeof(word);
 
-void sort(int low, int high, word* w_ptr, char* tmp);
+void sort(int low, int high, word* w_ptr, char** tmp);
 int search(word* w_ptr, int begin, int end, char* w);
 void append(word_array* w_arr, char* w, unsigned int line);
 void cleanup(word_array w_arr);
 
-void sort(int low, int high, word* w_ptr, char* tmp[]) {
+void sort(int low, int high, word* w_ptr, char** tmp) {
     if(low < high) {
         inline void merge(int low, int mid, int high) {
             int low_1 = low, low_2 = mid + 1, i = low;
@@ -61,9 +61,9 @@ int search(word* w_ptr, int begin, int end, char* w) {
             return mid;
 
         if (lookup > 0)
-            return bin_search(w_ptr, begin, mid - 1, w);
+            return search(w_ptr, begin, mid - 1, w);
 
-        return bin_search(w_ptr, mid + 1, end, w);
+        return search(w_ptr, mid + 1, end, w);
     }
 
     return -1;
