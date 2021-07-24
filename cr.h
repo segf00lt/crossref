@@ -6,21 +6,27 @@ typedef struct {
 	char* data;
 }word;
 
-typedef struct{
+typedef struct {
     unsigned int len;
     word* ptr;
 }word_array;
 
 const int MIN_LINE_LEN = 64;
 const size_t CHARSIZE = sizeof(char);
+const size_t STRSIZE = sizeof(char*);
 const size_t UINTSIZE = sizeof(unsigned int);
 const size_t LINESIZE = sizeof(line_t);
 const size_t WORDSIZE = sizeof(word);
 
+char** tmp_str_arr(unsigned int len);
 void sort(int low, int high, word* w_ptr, char** tmp);
 int search(word* w_ptr, int begin, int end, char* w);
-void append(word_array* w_arr, char* w, unsigned int line);
+void add_occur(word* w_ptr, int w_pos, line_t line);
+void add_word(word_array* w_arr, char* w, unsigned int line);
 void cleanup(word_array w_arr);
+
+char** tmp_str_arr(unsigned int len) {
+}
 
 void sort(int low, int high, word* w_ptr, char** tmp) {
     if(low < high) {
@@ -69,15 +75,20 @@ int search(word* w_ptr, int begin, int end, char* w) {
     return -1;
 }
 
-void append(word_array* w_arr, char* w, line_t line) {
+void add_occur(word* w_ptr, int w_pos, line_t line) {
+    w_ptr->lines = (line_t*)realloc(++w_ptr->count * LINESIZE);
+    w_ptr->lines[w_ptr->count - 1];
+}
+
+void add_word(word_array* w_arr, char* w, line_t line) {
     word new_w = { .count = 1, .lines = (line_t*)malloc(LINESIZE), .data = w };
     if(new_w.lines == NULL) {
-        fprintf(stderr, "error: bad alloc in append\n");
+        fprintf(stderr, "error: bad alloc in add_word\n");
         exit(1);
     } else
         new_w.lines[0] = line;
 
-    w_arr->ptr = (word*)realloc(w_arr->ptr, (++(w_arr->len)) * WORDSIZE);
+    w_arr->ptr = (word*)realloc(w_arr->ptr, (++w_arr->len * WORDSIZE));
     w_arr->ptr[(w_arr->len) - 1] = new_w;
 }
 
