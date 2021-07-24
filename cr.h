@@ -1,9 +1,9 @@
 typedef unsigned int line_t;
 
 typedef struct {
-	unsigned int count;
-	line_t* lines;
-	char* data;
+    unsigned int count;
+    line_t* lines;
+    char* data;
 }word;
 
 typedef struct {

@@ -22,15 +22,15 @@ word_array fparse(FILE* fp) {
     int w_pos = 0;
     char** tmp = NULL;
 
-	while((fgets(line_buf, MIN_LINE_LEN, fp)) != EOF) {
+    while((fgets(line_buf, MIN_LINE_LEN, fp)) != EOF) {
 
-		while((c_buf = tolower(line_buf[col++])) != '\0') {
+        while((c_buf = tolower(line_buf[col++])) != '\0') {
 
-			if('a' <= c_buf && 'z' >= c_buf || c_buf == '-' || c_buf == '\'') {
-				word_buf = (char*)realloc(word_buf, (strlen(word_buf) * CHARSIZE));
-				word_buf[strlen(word_buf) - 1] = c_buf;
+            if('a' <= c_buf && 'z' >= c_buf || c_buf == '-' || c_buf == '\'') {
+                word_buf = (char*)realloc(word_buf, (strlen(word_buf) * CHARSIZE));
+                word_buf[strlen(word_buf) - 1] = c_buf;
 
-			} else if(word_buf != NULL) {
+            } else if(word_buf != NULL) {
                 if((w_pos = search(w_arr.ptr, 0, (w_arr.len - 1), word_buf)) < 0) {
                     add_word(&w_arr, word_buf, line);
                     // PROPERLY ALLOCATE TEMP STRING ARRAY
@@ -42,12 +42,12 @@ word_array fparse(FILE* fp) {
                 } else
                     add_occur(&w_arr.ptr, w_pos, line);
 
-				free(word_buf);
-				word_buf = NULL;
-			}
-		}
+                free(word_buf);
+                word_buf = NULL;
+            }
+        }
         ++line;
-	}
+    }
 
     if(word_buf != NULL)
         free(word_buf);
@@ -55,7 +55,7 @@ word_array fparse(FILE* fp) {
 
     if(line_buf != NULL)
         free(line_buf);
-	line_buf = NULL;
+    line_buf = NULL;
 }
 
 int main(int argc, char* argv[]) {
@@ -66,13 +66,13 @@ int main(int argc, char* argv[]) {
         case(argc > 2):
             fprintf(stderr, "error: too many arguments\n");
             exit(1);
-	}
+    }
 
-	FILE* fp = fopen(argv[1], "r");
+    FILE* fp = fopen(argv[1], "r");
 
     word_array w_arr = fparse(fp);
 
-	fclose(fp);
+    fclose(fp);
 
-	return 0;
+    return 0;
 }
