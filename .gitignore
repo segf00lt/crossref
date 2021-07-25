@@ -7,3 +7,6 @@ a.out
 
 # ignore executables
 cr
+
+# misc
+lipsum*

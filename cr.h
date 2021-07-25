@@ -1,17 +1,16 @@
 typedef unsigned int line_t;
 
 typedef struct {
-    unsigned int count;
+    int count;
     line_t* lines;
     char* data;
 }word;
 
 typedef struct {
-    unsigned int len;
+    int len;
     word* ptr;
 }word_array;
 
-const int MIN_LINE_LEN = 64;
 const size_t CHARSIZE = sizeof(char);
 const size_t STRSIZE = sizeof(char*);
 const size_t UINTSIZE = sizeof(unsigned int);
@@ -20,10 +19,10 @@ const size_t WORDSIZE = sizeof(word);
 
 void sort(int low, int high, word* w_ptr, word* tmp);
 int search(word* w_ptr, int begin, int end, char* w);
-word_array mk_word_array(unsigned int len);
+word_array mk_word_array(int len);
 void add_occur(word* w_ptr, int w_pos, line_t line);
-void append_word(word_array* w_arr, char* w, unsigned int line);
-void insert_word(word_array* w_arr, char* w, unsigned int line, unsigned int pos);
+void append_word(word_array* w_arr, char* w, line_t line);
+void insert_word(word_array* w_arr, char* w, line_t line, int pos);
 void cleanup(word_array* w_arr);
 
 void sort(int low, int high, word* w_ptr, word* tmp) {
@@ -31,7 +30,7 @@ void sort(int low, int high, word* w_ptr, word* tmp) {
         inline void merge(int low, int mid, int high) {
             int low_1 = low, low_2 = mid + 1, i = low;
 
-            for(low_1, low_2, i;low_1 <= mid && low_2 <= high;++i) {
+            for(;low_1 <= mid && low_2 <= high;++i) {
                 if(strcmp(w_ptr[low_1].data, w_ptr[low_2].data) >= 0)
                     tmp[i] = w_ptr[low_1++];
                 else
@@ -73,7 +72,7 @@ int search(word* w_ptr, int begin, int end, char* w) {
     return -1;
 }
 
-word_array mk_word_array(unsigned int len) {
+word_array mk_word_array(int len) {
     if(len == 0) {
         word_array w_arr = { .len = 0, .ptr = NULL };
         return w_arr;
@@ -89,7 +88,7 @@ word_array mk_word_array(unsigned int len) {
 
 void add_occur(word* w_ptr, int w_pos, line_t line) {
     w_ptr->lines = (line_t*)realloc(w_ptr->lines, ++w_ptr->count * LINESIZE);
-    w_ptr->lines[w_ptr->count - 1];
+    w_ptr->lines[w_ptr->count - 1] = line;
 }
 
 void append_word(word_array* w_arr, char* w, line_t line) {
@@ -104,7 +103,7 @@ void append_word(word_array* w_arr, char* w, line_t line) {
     w_arr->ptr[(w_arr->len) - 1] = new_w;
 }
 
-void insert_word(word_array* w_arr, char* w, unsigned int line, unsigned int pos) {
+void insert_word(word_array* w_arr, char* w, line_t line, int pos) {
     word new_w = { .count = 1, .lines = (line_t*)malloc(LINESIZE), .data = w };
     if(new_w.lines == NULL) {
         fprintf(stderr, "error: bad alloc in insert_word\n");
@@ -118,7 +117,7 @@ void insert_word(word_array* w_arr, char* w, unsigned int line, unsigned int pos
 }
 
 void cleanup(word_array* w_arr) {
-    for(unsigned int i = 0; i < w_arr->len;++i) {
+    for(int i = 0; i < w_arr->len;++i) {
         line_t* l = (w_arr->ptr[i]).lines;
         if(l != NULL)
             free(l);
