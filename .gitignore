@@ -1,0 +1,9 @@
+# ignore test files
+*_test.c
+a.out
+
+#ignore vim session
+*.vim
+
+# ignore executables
+cr
