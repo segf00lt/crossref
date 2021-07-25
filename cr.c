@@ -11,47 +11,46 @@ word_array fparse(FILE* fp);
 void print_report(word_array w_arr);
 
 word_array fparse(FILE* fp) {
-    word_array w_arr = { .len = 0, .ptr = NULL };
+    word_array w_arr = mk_word_array(0);
 
     char* line_buf = (char*)malloc(MIN_LINE_LEN * CHARSIZE);
     line_t line = 1;
 
     unsigned int col = 0;
     char c_buf = '\0';
-    char* word_buf = NULL;
+    char* str_buf = "";
+
     int w_pos = 0;
-    char** tmp = NULL;
+    word_array tmp = { .len = 0, .ptr = NULL };
 
     while((fgets(line_buf, MIN_LINE_LEN, fp)) != EOF) {
 
         while((c_buf = tolower(line_buf[col++])) != '\0') {
 
-            if('a' <= c_buf && 'z' >= c_buf || c_buf == '-' || c_buf == '\'') {
-                word_buf = (char*)realloc(word_buf, (strlen(word_buf) * CHARSIZE));
-                word_buf[strlen(word_buf) - 1] = c_buf;
+            if('a' <= c_buf && 'z' >= c_buf || c_buf == '-' || c_buf == '\'')
+                str_buf = strcat(str_buf, &c_buf, 1);
 
-            } else if(word_buf != NULL) {
-                if((w_pos = search(w_arr.ptr, 0, (w_arr.len - 1), word_buf)) < 0) {
-                    add_word(&w_arr, word_buf, line);
-                    // PROPERLY ALLOCATE TEMP STRING ARRAY
-                    tmp = (char**)malloc(w_arr.len * STRSIZE);
-                    sort(0, (w_arr.len - 1), w_arr.ptr, tmp);
-                    if(tmp != NULL)
-                        free(tmp);
-                    tmp = NULL;
+            else if(str_buf != NULL) {
+                if((w_pos = search(w_arr.ptr, 0, (w_arr.len - 1), str_buf)) < 0) {
+                    append_word(&w_arr, str_buf, line);
+                    tmp = mk_word_array(w_arr.len);
+                    sort(0, (w_arr.len - 1), w_arr.ptr, tmp.ptr);
+                    cleanup(&tmp);
                 } else
-                    add_occur(&w_arr.ptr, w_pos, line);
+                    add_occur(w_arr.ptr, w_pos, line);
 
-                free(word_buf);
-                word_buf = NULL;
+                str_buf = "";
             }
         }
-        ++line;
+        if(line_buf[col] = '\n')
+            ++line;
+        col = 0;
+        str_buf = "";
     }
 
-    if(word_buf != NULL)
-        free(word_buf);
-    word_buf = NULL;
+    if(str_buf != NULL)
+        free(str_buf);
+    str_buf = NULL;
 
     if(line_buf != NULL)
         free(line_buf);
