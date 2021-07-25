@@ -22,7 +22,6 @@ int search(word* w_ptr, int begin, int end, char* w);
 word_array mk_word_array(int len);
 void add_occur(word* w_ptr, int w_pos, line_t line);
 void append_word(word_array* w_arr, char* w, line_t line);
-void insert_word(word_array* w_arr, char* w, line_t line, int pos);
 void cleanup(word_array* w_arr);
 
 void sort(int low, int high, word* w_ptr, word* tmp) {
@@ -101,19 +100,6 @@ void append_word(word_array* w_arr, char* w, line_t line) {
 
     w_arr->ptr = (word*)realloc(w_arr->ptr, (++w_arr->len * WORDSIZE));
     w_arr->ptr[(w_arr->len) - 1] = new_w;
-}
-
-void insert_word(word_array* w_arr, char* w, line_t line, int pos) {
-    word new_w = { .count = 1, .lines = (line_t*)malloc(LINESIZE), .data = w };
-    if(new_w.lines == NULL) {
-        fprintf(stderr, "error: bad alloc in insert_word\n");
-        exit(1);
-    } else
-        new_w.lines[0] = line;
-
-    if(w_arr->len <= pos)
-        return;
-    w_arr->ptr[pos] = new_w;
 }
 
 void cleanup(word_array* w_arr) {
