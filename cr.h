@@ -21,8 +21,9 @@ void sort(int low, int high, word* w_ptr, word* tmp);
 int search(word* w_ptr, int begin, int end, char* w);
 word_array mk_word_array(int len);
 void add_occur(word* w_ptr, int w_pos, line_t line);
+void resize(word_array* w_arr, int increment);
 void append_word(word_array* w_arr, char* w, line_t line);
-void cleanup(word_array* w_arr);
+void cleanup(word_array* w_arr, unsigned int flag);
 
 void sort(int low, int high, word* w_ptr, word* tmp) {
 	if(low < high) {
@@ -30,7 +31,7 @@ void sort(int low, int high, word* w_ptr, word* tmp) {
 			int low_1 = low, low_2 = mid + 1, i = low;
 
 			for(;low_1 <= mid && low_2 <= high;++i) {
-				if(strcmp(w_ptr[low_1].data, w_ptr[low_2].data) >= 0)
+				if(strcmp(w_ptr[low_1].data, w_ptr[low_2].data) <= 0)
 					tmp[i] = w_ptr[low_1++];
 				else
 					tmp[i] = w_ptr[low_2++];
@@ -90,11 +91,16 @@ void add_occur(word* w_ptr, int w_pos, line_t line) {
 	w_ptr->lines[w_ptr->count - 1] = line;
 }
 
+void resize(word_array* w_arr, int increment) {
+	w_arr->len = w_arr->len + increment;
+	w_arr->ptr = (word*)realloc(w_arr->ptr, w_arr->len * WORDSIZE);
+}
+
 void append_word(word_array* w_arr, char* w, line_t line) {
 	word new_w = {
 		.count = 1,
 		.lines = (line_t*)malloc(LINESIZE),
-		.data = (char*)malloc(CHARSIZE * strlen(w))
+		.data = NULL
 	};
 
 	if(new_w.lines == NULL) {
@@ -103,24 +109,20 @@ void append_word(word_array* w_arr, char* w, line_t line) {
 	} else
 		new_w.lines[0] = line;
 
-	if(new_w.data == NULL) {
-		fprintf(stderr, "error: bad alloc in append_word\n");
-		exit(1);
-	} else
-		new_w.data = strdup(w);
+	new_w.data = strdup(w);
 
-	w_arr->ptr = (word*)realloc(w_arr->ptr, (++w_arr->len * WORDSIZE));
+	resize(w_arr, 1);
 	w_arr->ptr[(w_arr->len) - 1] = new_w;
 }
 
-void cleanup(word_array* w_arr) {
+void cleanup(word_array* w_arr, unsigned int flag) {
 	for(int i = 0; i < w_arr->len;++i) {
 		line_t* l = (w_arr->ptr[i]).lines;
 		char* w = (w_arr->ptr[i]).data;
-		if(l != NULL)
+		if(l != NULL && flag == 1)
 			free(l);
 		l = NULL;
-		if(w != NULL)
+		if(w != NULL && flag == 1)
 			free(w);
 		w = NULL;
 	}

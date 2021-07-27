@@ -22,14 +22,14 @@ word_array fparse(FILE* fp) {
 	const char* delims = " .\n";
 
 	int w_pos = 0;
-	word_array tmp = { .len = 0, .ptr = NULL };
+	word_array tmp = mk_word_array(0);
 
 	while((fgets(line_buf, MIN_LINE_LEN, fp)) != NULL) {
 
 		for(str_buf = strtok(line_buf, delims); str_buf != NULL; str_buf = strtok(NULL, delims)) {
 			if((w_pos = search(w_arr.ptr, 0, (w_arr.len - 1), str_buf)) < 0) {
 				append_word(&w_arr, str_buf, line);
-				tmp = mk_word_array(w_arr.len);
+				resize(&tmp, 1);
 				sort(0, (w_arr.len - 1), w_arr.ptr, tmp.ptr);
 			} else
 				add_occur(w_arr.ptr, w_pos, line);
@@ -42,6 +42,7 @@ word_array fparse(FILE* fp) {
 	if(line_buf != NULL)
 		free(line_buf);
 	line_buf = NULL;
+	cleanup(&tmp, 0);
 
 	return w_arr;
 }
@@ -68,7 +69,7 @@ int main(int argc, char* argv[]) {
 		printf("%s\n", (w_arr.ptr[i]).data);
 	}
 
-	cleanup(&w_arr);
+	cleanup(&w_arr, 1);
 	fclose(fp);
 
 	return 0;
