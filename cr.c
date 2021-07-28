@@ -7,7 +7,7 @@
 #include <string.h>
 #include "cr.h"
 
-const int MIN_LINE_LEN = 64;
+const int MIN_LINE_LEN = 256;
 
 word_array fparse(FILE* fp);
 void print_report(word_array w_arr);
@@ -27,15 +27,14 @@ word_array fparse(FILE* fp) {
 	while((fgets(line_buf, MIN_LINE_LEN, fp)) != NULL) {
 
 		for(str_buf = strtok(line_buf, delims); str_buf != NULL; str_buf = strtok(NULL, delims)) {
-			if((w_pos = search(w_arr.ptr, 0, (w_arr.len - 1), str_buf)) < 0) {
+			if((w_pos = search(w_arr.ptr, 0, (w_arr.len - 1), str_buf)) == -1) {
 				append_word(&w_arr, str_buf, line);
 				resize(&tmp, 1);
 				sort(0, (w_arr.len - 1), w_arr.ptr, tmp.ptr);
 			} else
 				add_occur(w_arr.ptr, w_pos, line);
 		}
-		if(line_buf[strlen(line_buf) - 1] == '\n')
-			++line;
+		++line;
 	}
 
 	str_buf = NULL;
@@ -48,7 +47,12 @@ word_array fparse(FILE* fp) {
 }
 
 void print_report(word_array w_arr) {
-	return;
+	for(int i = 0; i < w_arr.len; ++i) {
+		printf("%s [%i] : { ", (w_arr.ptr[i]).data, (w_arr.ptr[i]).count);
+		for(int j = 0; j < w_arr.ptr[i].count; ++j)
+			printf("%i, ", w_arr.ptr[i].lines[j]);
+		printf("}\n");
+	}
 }
 
 int main(int argc, char* argv[]) {
@@ -65,9 +69,7 @@ int main(int argc, char* argv[]) {
 
 	word_array w_arr = fparse(fp);
 
-	for(int i = 0; i < w_arr.len; ++i) {
-		printf("%s\n", (w_arr.ptr[i]).data);
-	}
+	print_report(w_arr);
 
 	cleanup(&w_arr, 1);
 	fclose(fp);

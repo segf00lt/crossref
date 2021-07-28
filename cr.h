@@ -87,8 +87,9 @@ word_array mk_word_array(int len) {
 }
 
 void add_occur(word* w_ptr, int w_pos, line_t line) {
-	w_ptr->lines = (line_t*)realloc(w_ptr->lines, ++w_ptr->count * LINESIZE);
-	w_ptr->lines[w_ptr->count - 1] = line;
+	word* w = w_ptr + w_pos;
+	w->lines = (line_t*)realloc(w->lines, ++w->count * LINESIZE);
+	w->lines[w->count - 1] = line;
 }
 
 void resize(word_array* w_arr, int increment) {
