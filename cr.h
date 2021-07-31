@@ -17,7 +17,8 @@ const size_t UINTSIZE = sizeof(unsigned int);
 const size_t LINESIZE = sizeof(line_t);
 const size_t WORDSIZE = sizeof(word);
 
-void sort(int low, int high, word* w_ptr, word* tmp);
+char* lower(char* w);
+void sort(int low, int high, word* w_ptr, word* tmp, int flag);
 int search(word* w_ptr, int begin, int end, char* w);
 word_array mk_word_array(int len);
 void add_occur(word* w_ptr, int w_pos, line_t line);
@@ -25,13 +26,24 @@ void resize(word_array* w_arr, int increment);
 void append_word(word_array* w_arr, char* w, line_t line);
 void cleanup(word_array* w_arr, unsigned int flag);
 
-void sort(int low, int high, word* w_ptr, word* tmp) {
+char* lower(char* w) {
+	for(int i = 0; i < strlen(w); ++i)
+		w[i] = tolower(w[i]);
+	return w;
+}
+
+void sort(int low, int high, word* w_ptr, word* tmp, int flag) {
 	if(low < high) {
 		inline void merge(int low, int mid, int high) {
 			int low_1 = low, low_2 = mid + 1, i = low;
 
 			for(;low_1 <= mid && low_2 <= high;++i) {
-				if(strcmp(w_ptr[low_1].data, w_ptr[low_2].data) <= 0)
+				int test = 0;
+				if(flag)
+					test = strcmp( w_ptr[low_1].data, w_ptr[low_2].data );
+				else
+					test = (w_ptr[low_1].count <= w_ptr[low_2].count) ? 1 : 0;
+				if(test <= 0)
 					tmp[i] = w_ptr[low_1++];
 				else
 					tmp[i] = w_ptr[low_2++];
@@ -47,8 +59,8 @@ void sort(int low, int high, word* w_ptr, word* tmp) {
 		}
 		int mid = (low + high) / 2;
 
-		sort(low, mid, w_ptr, tmp);
-		sort(mid + 1, high, w_ptr, tmp);
+		sort(low, mid, w_ptr, tmp, flag);
+		sort(mid + 1, high, w_ptr, tmp, flag);
 
 		merge(low, mid, high);
 	} else 

@@ -3,4 +3,4 @@ Parse files and output words and the line numbers they occur on, ordered in
 number of occurences.
 
 ## TODO
-- improve parsing (maybe needs to parse individual chars)
+- re write in C++ on separate branch
