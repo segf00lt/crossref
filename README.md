@@ -1,7 +1,6 @@
 # cr (crossreference)
 Parse files and output words and the line numbers they occur on, ordered in
-number of occurences.
+number of occurrences.
 
 ## TODO
 - improve design (base on `awk` version)
-- re write in C++ on separate branch

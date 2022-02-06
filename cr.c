@@ -2,30 +2,59 @@
  * print each word followed by the line number of those
  * occurences in order */
 
+/*
+ * PLANNING:
+ *
+ * parse(): read file line by line:
+ * 	process(): replace punctuation and other stuff
+ * 	with whitespace.
+ * 	
+ * 	strtok(): tokenize line separating words by whitespace.
+ *
+ * 	map_in(): lookup word in noise table:
+ * 		if word is in noise table: continue
+ *
+ * 	map_in(): lookup word in table:
+ * 		if word is not in table: add word to table.
+ *
+ * 		append line number to table item.
+ *
+ * 	map_items(): return list of items in table.
+ *
+ * 	qsort() or msort(): sort list returned by map_items().
+ *
+ * 	return list.
+ *
+ * print_words(): print words in list and corresponding line numbers on
+ * which they occur.
+ *
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "cr.h"
+#include "lib/vector/vector.h"
+#include "lib/unordered_map/map.h"
 
-const int MIN_LINE_LEN = 128;
+#define LINE_LEN 255
+#define NOISE_WORDS 13
 
-word_array fparse(FILE* fp);
-void print_report(word_array w_arr);
+Item* parse(FILE* fp);
+void print_report(Item* arr);
 
-word_array fparse(FILE* fp) {
-	word_array w_arr = mk_word_array(0);
+Item*
+parse(FILE* fp) {
+	//word_array w_arr = mk_word_array(0);
 
-	char* line_buf = (char*)malloc(MIN_LINE_LEN * CHARSIZE);
-	line_t line = 0;
+	char* line_buf[LINE_LEN];
+	//line_t line = 0;
+	unsigned int line = 0;
 
 	char* str_buf = NULL;
-	const char* delims = " .,\n";
+	const char* filter = " {}[]()\"&^@!#$%-=+`~<>/|.,\n";
 
-	int w_pos = 0;
-	word_array tmp = mk_word_array(0);
-
-	char* NOISE[13] = {
+	const char* NOISE[NOISE_WORDS] = {
 		"a", "and", "be",
 		"have", "i", "it",
 		"of", "on", "that",
@@ -33,13 +62,20 @@ word_array fparse(FILE* fp) {
 		"you"
 	};
 
-	word_array NOISE_ARR = mk_word_array(0);
-	for(int i = 0; i < 13; append_word(&NOISE_ARR, NOISE[i++], 0));
+	Map* noise = map_prealloc(NOISE_WORDS, char);
 
-	while((fgets(line_buf, MIN_LINE_LEN, fp)) != NULL) {
-		if(line_buf[strlen(line_buf) - 1] == '\n')
+	/* populate noise word map */
+	for(int i = 0; i < NOISE_WORDS; ++i)
+		map_add(noise, NOISE[i]);
+
+	while(fgets(line_buf, LINE_LEN, fp) != NULL) {
+
+		if(line_buf[strlen(line_buf) - 1] == '\n') {
 			++line;
-		for(str_buf = strtok(line_buf, delims); str_buf != NULL; str_buf = strtok(NULL, delims)) {
+			continue;
+		}
+
+		for(str_buf = strtok(line_buf, filter); str_buf != NULL; str_buf = strtok(NULL, delims)) {
 			str_buf = lower(str_buf);
 
 			if(search(NOISE_ARR.ptr, 0, 12, str_buf) >= 0)
