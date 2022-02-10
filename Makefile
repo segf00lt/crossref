@@ -1,8 +1,8 @@
 CC = gcc
 
-CFLAGS = -g -Wpedantic -Wall -D'MAP_ITEM_FUNCS'
+CFLAGS = -g -Wpedantic -Wall
 
-TARGET = cr.c vector.c map.c
+SRC = cr.c
 
-all: ${TARGET}
-	${CC} ${CFLAGS} -o cr ${TARGET}
+all:
+	${CC} ${CFLAGS} -o cr ${SRC}

@@ -1,13 +1,9 @@
-# ignore test files
 *_test
 *_test.c
 a.out
-
-#ignore vim session
 *.vim
-
-# ignore executables
 cr
-
-# misc
+cr.awk
+vgcore*
+lib/vector
 lipsum*
